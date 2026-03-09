@@ -7,9 +7,10 @@
 - UI: Instagram dark mode
 - Data source: Embedded JSON in app code (3 JSON files)
 - Message rendering: Two-sided chat (Aditya vs Chikki)
-- Current user name: "Aditya"
+- Current user name: "Chikki" (main person)
 - Single conversation timeline merged from all files
 - Include dates and timings
+- Custom theme request: heart-glow background image + sender-specific bubble colors
 
 ## Architecture Decisions
 - Frontend-first MVP implemented in React with modular components.
@@ -20,12 +21,14 @@
 ## Implemented
 - Instagram-like responsive dark layout with conversation sidebar + chat pane.
 - Two-sided message bubbles: right for Aditya, left for Chikki.
+- Two-sided message bubbles: right for Chikki, left for Aditya.
 - Single merged timeline from 3 embedded JSON files.
 - Date separators added in chat stream and time shown per message.
 - Robust parser with graceful fallback demo state when JSON is missing/invalid.
 - `data-testid` attributes added across interactive and critical UI elements.
 - Mobile overlap design issue fixed by adding safe-area spacing in footer note section.
 - Mobile sidebar testability hardened with unique prefixed test IDs and explicit close button.
+- Applied custom visual theme matching reference style: heart background, indigo UI shell, `#472596` for Aditya bubbles, and `#E2D1FE` for Chikki bubbles.
 
 ## Prioritized Backlog
 ### P0

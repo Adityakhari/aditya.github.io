@@ -6,7 +6,7 @@ import { ConversationSidebar } from "@/components/chat/ConversationSidebar";
 import { ChatPane } from "@/components/chat/ChatPane";
 import { embeddedInstagramFiles } from "@/data/embeddedInstagramFiles";
 
-const USER_NAME = "Aditya";
+const USER_NAME = "Chikki";
 
 function App() {
   const conversations = useMemo(
@@ -26,11 +26,11 @@ function App() {
 
   return (
     <main
-      className="min-h-screen w-full overflow-hidden bg-[#000000] text-[#FAFAFA]"
+      className="min-h-screen w-full overflow-hidden bg-[#060B5B] text-[#FAFAFA]"
       data-testid="instagram-chat-app"
     >
       <div className="mx-auto flex h-screen w-full max-w-[1600px]">
-        <aside className="hidden h-full w-[360px] shrink-0 border-r border-[#262626] md:block lg:w-[400px]">
+        <aside className="hidden h-full w-[360px] shrink-0 border-r border-[#2b1f5e] bg-[#0B0F67]/90 backdrop-blur-sm md:block lg:w-[400px]">
           <ConversationSidebar
             conversations={conversations}
             selectedConversationId={activeConversation?.id}
@@ -43,7 +43,7 @@ function App() {
 
         {isMobileSidebarOpen ? (
           <aside
-            className="absolute inset-0 z-20 h-screen w-full bg-[#000000] md:hidden"
+            className="absolute inset-0 z-20 h-screen w-full bg-[#0B0F67] md:hidden"
             data-testid="mobile-sidebar-overlay"
           >
             <ConversationSidebar
@@ -62,7 +62,7 @@ function App() {
         ) : null}
 
         <section className="relative flex min-w-0 flex-1 flex-col">
-          <div className="flex h-[60px] items-center border-b border-[#262626] px-4 md:hidden">
+          <div className="flex h-[60px] items-center border-b border-[#2b1f5e] bg-[#0B0F67]/90 px-4 backdrop-blur-sm md:hidden">
             <button
               type="button"
               onClick={() => setIsMobileSidebarOpen(true)}

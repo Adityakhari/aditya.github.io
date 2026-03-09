@@ -5,6 +5,8 @@ const formatTimestamp = (timestamp) =>
   });
 
 export const MessageBubble = ({ message, isMine, showSender, index }) => {
+  const isAdityaMessage = message.senderName === "Aditya";
+
   return (
     <article
       className={`flex w-full ${isMine ? "justify-end" : "justify-start"}`}
@@ -13,7 +15,7 @@ export const MessageBubble = ({ message, isMine, showSender, index }) => {
       <div className="max-w-[85%] sm:max-w-[75%]">
         {showSender ? (
           <p
-            className={`mb-1 text-xs ${isMine ? "text-right text-[#8CC7FF]" : "text-[#A8A8A8]"}`}
+            className={`mb-1 text-xs ${isMine ? "text-right text-[#F3E9FF]" : "text-[#D9CBFF]"}`}
             data-testid={`message-sender-${index}`}
           >
             {message.senderName}
@@ -22,9 +24,9 @@ export const MessageBubble = ({ message, isMine, showSender, index }) => {
 
         <div
           className={`rounded-[22px] px-4 py-3 text-sm leading-relaxed shadow-sm ${
-            isMine
-              ? "rounded-br-md bg-[#3797F0] text-white"
-              : "rounded-bl-md bg-[#262626] text-[#FAFAFA]"
+            isAdityaMessage
+              ? "rounded-bl-md bg-[#472596] text-[#F6EDFF]"
+              : "rounded-br-md bg-[#E2D1FE] text-[#1C0F36]"
           }`}
           data-testid={`message-bubble-${index}`}
         >

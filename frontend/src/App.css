@@ -1,6 +1,6 @@
 .chat-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: #2f2f2f transparent;
+    scrollbar-color: #7a63cf transparent;
 }
 
 .chat-scrollbar::-webkit-scrollbar {
@@ -8,14 +8,16 @@
 }
 
 .chat-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #2f2f2f;
+    background-color: #7055bf;
     border-radius: 999px;
 }
 
-.insta-grid-bg {
-    background-color: #000000;
+.chat-heart-bg {
+    background-color: #0a0d65;
     background-image:
-        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 34px 34px;
+        linear-gradient(rgba(7, 8, 66, 0.55), rgba(7, 8, 66, 0.82)),
+        url("https://customer-assets.emergentagent.com/job_responsive-messenger-2/artifacts/r6c4msio_8cd4b18be3c144b260c6446671844a60.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }

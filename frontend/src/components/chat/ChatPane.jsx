@@ -35,7 +35,7 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
   return (
     <div className="flex min-h-0 flex-1 flex-col" data-testid="chat-pane">
       <header
-        className="flex h-[60px] shrink-0 items-center justify-between border-b border-[#262626] px-4 md:px-6"
+        className="flex h-[60px] shrink-0 items-center justify-between border-b border-[#2b1f5e] bg-[#0B0F67]/85 px-4 backdrop-blur-sm md:px-6"
         data-testid="chat-header"
       >
         <div className="min-w-0">
@@ -52,7 +52,7 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
       </header>
 
       <div
-        className="chat-scrollbar insta-grid-bg flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-3 py-4 sm:px-6"
+        className="chat-scrollbar chat-heart-bg flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-3 py-4 sm:px-6"
         data-testid="message-list"
       >
         {conversation.messages.map((message, index) => {
@@ -68,7 +68,7 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
               {showDateSeparator ? (
                 <div className="my-2 flex justify-center" data-testid={`message-date-separator-wrapper-${index}`}>
                   <span
-                    className="rounded-full border border-[#2c2c2c] bg-[#0e0e0e] px-3 py-1 text-[10px] uppercase tracking-wide text-[#A8A8A8]"
+                    className="rounded-full border border-[#6a57b4] bg-[#1D1E84]/80 px-3 py-1 text-[10px] uppercase tracking-wide text-[#E8DBFF]"
                     data-testid={`message-date-separator-${index}`}
                   >
                     {formatDateLabel(message.timestamp)}
@@ -88,11 +88,11 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
       </div>
 
       <div
-        className="border-t border-[#262626] px-4 pb-20 pt-3 sm:px-6 sm:pb-3"
+        className="border-t border-[#2b1f5e] bg-[#0B0F67]/90 px-4 pb-20 pt-3 backdrop-blur-sm sm:px-6 sm:pb-3"
         data-testid="chat-footer-wrapper"
       >
         <p
-          className="rounded-full border border-[#262626] bg-[#121212] px-4 py-3 pr-20 text-xs text-[#A8A8A8] sm:pr-4"
+          className="rounded-full border border-[#6a57b4] bg-[#1D1E84]/85 px-4 py-3 pr-20 text-xs text-[#E8DBFF] sm:pr-4"
           data-testid="chat-footer-note"
         >
           Viewer Mode: Timeline merged from embedded JSON files.

@@ -27,10 +27,10 @@ export const ConversationSidebar = ({
 }) => {
   return (
     <div
-      className="flex h-full flex-col bg-[#000000]"
+      className="flex h-full flex-col bg-[#0B0F67]/90 backdrop-blur-sm"
       data-testid={withPrefix(testIdPrefix, "conversation-sidebar")}
     >
-      <div className="border-b border-[#262626] px-5 py-5">
+      <div className="border-b border-[#2b1f5e] px-5 py-5">
         <div className="flex items-center justify-between gap-3">
           <p
             className="text-xs uppercase tracking-[0.25em] text-[#A8A8A8]"
@@ -43,7 +43,7 @@ export const ConversationSidebar = ({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full border border-[#363636] p-1.5 transition-colors duration-200 hover:bg-[#121212]"
+              className="rounded-full border border-[#5f54a0] p-1.5 transition-colors duration-200 hover:bg-[#1a1f7d]"
               data-testid={withPrefix(testIdPrefix, "sidebar-close-button")}
             >
               <X size={15} />
@@ -71,7 +71,7 @@ export const ConversationSidebar = ({
               key={conversation.id}
               onClick={() => onSelectConversation(conversation.id)}
               className={`w-full border-b border-[#111111] px-5 py-4 text-left transition-colors duration-200 ${
-                isSelected ? "bg-[#121212]" : "hover:bg-[#0d0d0d]"
+                isSelected ? "bg-[#1a1f7d]/90" : "hover:bg-[#151a73]/80"
               }`}
               data-testid={withPrefix(
                 testIdPrefix,
