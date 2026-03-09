@@ -1,5 +1,5 @@
-import chikkiPart1 from "@/data/chikki_messages_part1.json";
-import chikkiPart2 from "@/data/chikki_messages_part2.json";
-import chikkiPart3 from "@/data/chikki_messages_part3.json";
+import chatPart1 from "@/data/chat.json";
+import chatPart2 from "@/data/message_2.json";
+import chatPart3 from "@/data/message_3.json";
 
-export const embeddedInstagramFiles = [chikkiPart1, chikkiPart2, chikkiPart3];
+export const embeddedInstagramFiles = [chatPart1, chatPart2, chatPart3];

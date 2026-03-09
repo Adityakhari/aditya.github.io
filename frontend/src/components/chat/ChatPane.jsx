@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import { MessageBubble } from "@/components/chat/MessageBubble";
+import { isSamePerson } from "@/lib/nameUtils";
 
 const getDayKey = (timestamp) => new Date(timestamp).toDateString();
 
@@ -61,7 +62,7 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
           const showDateSeparator =
             !previousMessage ||
             getDayKey(previousMessage.timestamp) !== getDayKey(message.timestamp);
-          const isMine = message.senderName === currentUser;
+          const isMine = isSamePerson(message.senderName, currentUser);
 
           return (
             <Fragment key={message.id}>

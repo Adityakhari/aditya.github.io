@@ -1,3 +1,5 @@
+import { isSamePerson } from "@/lib/nameUtils";
+
 const safeString = (value, fallback = "") => {
   if (typeof value === "string") {
     return value;
@@ -74,11 +76,15 @@ const mergeMessageFiles = (files, currentUser) => {
   const participants =
     uniqueParticipants.length > 0
       ? uniqueParticipants
-      : [currentUser, ...messageSenders.filter((name) => name !== currentUser)];
+      : [
+          currentUser,
+          ...messageSenders.filter((name) => !isSamePerson(name, currentUser)),
+        ];
 
   const firstFile = filesWithMessages[0] ?? {};
   const fallbackOtherParticipant =
-    messageSenders.find((name) => name !== currentUser) ?? "Conversation";
+    messageSenders.find((name) => !isSamePerson(name, currentUser)) ??
+    "Conversation";
 
   return [
     {
@@ -137,16 +143,19 @@ const normalizeConversation = (conversation, index, currentUser) => {
     .map((item) => safeString(item?.name ?? item?.username ?? item))
     .filter(Boolean);
 
-  const otherParticipants = participants.filter((name) => name !== currentUser);
+  const otherParticipants = participants.filter(
+    (name) => !isSamePerson(name, currentUser),
+  );
   const messages = (conversation.messages ?? [])
     .map((item, messageIndex) => normalizeMessage(item, messageIndex))
     .sort((first, second) => first.timestamp - second.timestamp);
 
   const lastMessage = messages.at(-1);
+  const rawTitle = safeString(conversation.title);
   const title =
-    safeString(conversation.title) ||
-    otherParticipants.join(", ") ||
-    "Conversation";
+    rawTitle && !isSamePerson(rawTitle, currentUser)
+      ? rawTitle
+      : otherParticipants.join(", ") || "Conversation";
 
   return {
     id: safeString(conversation.id ?? conversation.thread_id, `conv-${index}`),

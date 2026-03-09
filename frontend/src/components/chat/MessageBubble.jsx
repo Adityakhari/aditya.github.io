@@ -1,3 +1,5 @@
+import { isSamePerson } from "@/lib/nameUtils";
+
 const formatTimestamp = (timestamp) =>
   new Date(timestamp).toLocaleTimeString([], {
     hour: "2-digit",
@@ -5,7 +7,7 @@ const formatTimestamp = (timestamp) =>
   });
 
 export const MessageBubble = ({ message, isMine, showSender, index }) => {
-  const isAdityaMessage = message.senderName === "Aditya";
+  const isAdityaMessage = isSamePerson(message.senderName, "Aditya");
 
   return (
     <article
