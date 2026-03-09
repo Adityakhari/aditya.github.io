@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import { getDisplayName } from "@/lib/nameUtils";
 
 const formatTime = (timestamp) => {
   if (!timestamp) {
@@ -87,7 +88,7 @@ export const ConversationSidebar = ({
                       `conversation-title-${index}`,
                     )}
                   >
-                    {conversation.title}
+                    {getDisplayName(conversation.title)}
                   </p>
                   <p
                     className="mt-1 truncate text-xs text-[#A8A8A8]"

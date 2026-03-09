@@ -8,3 +8,6 @@ export const isSamePerson = (first, second) => {
   const normalizedSecond = normalizeName(second);
   return normalizedFirst.length > 0 && normalizedFirst === normalizedSecond;
 };
+
+export const getDisplayName = (name) =>
+  isSamePerson(name, "Aditya") ? "Aadi" : String(name ?? "");

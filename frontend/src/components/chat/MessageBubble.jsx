@@ -1,4 +1,4 @@
-import { isSamePerson } from "@/lib/nameUtils";
+import { getDisplayName, isSamePerson } from "@/lib/nameUtils";
 
 const formatTimestamp = (timestamp) =>
   new Date(timestamp).toLocaleTimeString([], {
@@ -26,7 +26,7 @@ export const MessageBubble = ({
             className={`mb-1 text-xs ${isMine ? "text-right text-[#F3E9FF]" : "text-[#D9CBFF]"}`}
             data-testid={`message-sender-${index}`}
           >
-            {message.senderName}
+            {getDisplayName(message.senderName)}
           </p>
         ) : null}
 

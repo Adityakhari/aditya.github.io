@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, ChevronUp, Search } from "lucide-react";
 import { MessageBubble } from "@/components/chat/MessageBubble";
-import { isSamePerson } from "@/lib/nameUtils";
+import { getDisplayName, isSamePerson } from "@/lib/nameUtils";
 
 const MESSAGE_BATCH_SIZE = 500;
 
@@ -173,15 +173,15 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
   return (
     <div className="flex min-h-0 flex-1 flex-col" data-testid="chat-pane">
       <header
-        className="flex min-h-[60px] shrink-0 items-center justify-between border-b border-[#2b1f5e] bg-[#0B0F67]/85 px-4 backdrop-blur-sm md:px-6"
+        className="flex min-h-[52px] shrink-0 items-center justify-between border-b border-[#2b1f5e] bg-[#0B0F67]/85 px-4 backdrop-blur-sm md:px-6"
         data-testid="chat-header"
       >
         <div className="min-w-0">
           <h2 className="truncate text-base font-semibold" data-testid="chat-header-title">
-            {conversation.title}
+            {getDisplayName(conversation.title)}
           </h2>
           <p className="mt-0.5 truncate text-xs text-[#A8A8A8]" data-testid="chat-header-subtitle">
-            {conversation.participants.join(" • ")}
+            Aadi is sorry
           </p>
         </div>
 
@@ -191,7 +191,7 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
       </header>
 
       <div
-        className="flex flex-wrap items-center gap-2 border-b border-[#2b1f5e] bg-[#0B0F67]/80 px-4 py-2 sm:px-6"
+        className="flex flex-wrap items-center gap-2 border-b border-[#2b1f5e] bg-[#0B0F67]/80 px-4 py-1.5 sm:px-6"
         data-testid="chat-search-toolbar"
       >
         <div className="flex min-w-[220px] flex-1 items-center gap-2 rounded-full border border-[#6a57b4] bg-[#111870]/90 px-3 py-1.5">
@@ -250,15 +250,6 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
         className="chat-scrollbar chat-heart-bg flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-3 py-4 sm:px-6"
         data-testid="message-list"
       >
-        <div className="flex items-center justify-center" data-testid="message-range-indicator-wrapper">
-          <p
-            className="rounded-full border border-[#6a57b4] bg-[#111870]/80 px-3 py-1 text-[10px] text-[#E8DBFF]"
-            data-testid="message-range-indicator"
-          >
-            Showing {visibleMessages.length} of {formatCompactCount(totalMessages)} messages
-          </p>
-        </div>
-
         {windowStart > 0 ? (
           <div className="mb-2 flex justify-center" data-testid="load-older-wrapper">
             <button
@@ -336,18 +327,6 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
             Jump to latest <ChevronDown size={13} />
           </button>
         ) : null}
-      </div>
-
-      <div
-        className="border-t border-[#2b1f5e] bg-[#0B0F67]/90 px-4 pb-24 pt-3 backdrop-blur-sm sm:px-6 sm:pb-3"
-        data-testid="chat-footer-wrapper"
-      >
-        <p
-          className="rounded-full border border-[#6a57b4] bg-[#1D1E84]/85 px-4 py-3 pr-32 text-xs text-[#E8DBFF] sm:pr-4"
-          data-testid="chat-footer-note"
-        >
-          Viewer Mode: Timeline merged from embedded JSON files.
-        </p>
       </div>
     </div>
   );

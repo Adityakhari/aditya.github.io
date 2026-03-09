@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import "@/App.css";
 import { Menu } from "lucide-react";
 import { parseInstagramData } from "@/lib/instagramParser";
+import { getDisplayName } from "@/lib/nameUtils";
 import { ConversationSidebar } from "@/components/chat/ConversationSidebar";
 import { ChatPane } from "@/components/chat/ChatPane";
 import { embeddedInstagramFiles } from "@/data/embeddedInstagramFiles";
@@ -75,7 +76,7 @@ function App() {
               className="ml-3 text-sm font-medium"
               data-testid="mobile-active-conversation-name"
             >
-              {activeConversation?.title ?? "No Conversation"}
+              {getDisplayName(activeConversation?.title ?? "No Conversation")}
             </p>
           </div>
 

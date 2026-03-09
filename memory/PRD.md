@@ -34,6 +34,8 @@
 - Added full-text search across entire conversation history with match navigation (prev/next), auto-jump to matched message, and highlighted result bubble.
 - Added instant **Jump to latest** floating button and compact count/range indicators for better usability on large histories.
 - Re-adjusted mobile footer safe-area/right padding so environment badge does not overlap viewer note.
+- Updated display name mapping from "Aditya" to "Aadi" across UI labels.
+- Updated header subtitle copy to: "Aadi is sorry" and removed bottom embedded-data footer note to maximize chat viewport space.
 
 ## Prioritized Backlog
 ### P0
