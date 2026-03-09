@@ -36,6 +36,8 @@ function App() {
             selectedConversationId={activeConversation?.id}
             onSelectConversation={setSelectedConversationId}
             currentUser={USER_NAME}
+            testIdPrefix="desktop"
+            showCloseButton={false}
           />
         </aside>
 
@@ -52,6 +54,9 @@ function App() {
                 setIsMobileSidebarOpen(false);
               }}
               currentUser={USER_NAME}
+              testIdPrefix="mobile"
+              showCloseButton
+              onClose={() => setIsMobileSidebarOpen(false)}
             />
           </aside>
         ) : null}

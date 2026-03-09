@@ -25,6 +25,7 @@
 - Robust parser with graceful fallback demo state when JSON is missing/invalid.
 - `data-testid` attributes added across interactive and critical UI elements.
 - Mobile overlap design issue fixed by adding safe-area spacing in footer note section.
+- Mobile sidebar testability hardened with unique prefixed test IDs and explicit close button.
 
 ## Prioritized Backlog
 ### P0
