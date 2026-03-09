@@ -19,6 +19,14 @@ const formatDateLabel = (timestamp) =>
 const formatCompactCount = (count) =>
   count >= 1000 ? `${(count / 1000).toFixed(1)}k` : `${count}`;
 
+const normalizeForSearch = (value) =>
+  String(value ?? "")
+    .toLowerCase()
+    .replace(/[’'`´]/g, "")
+    .replace(/[.,!?;:()[\]{}"“”\\/@#$%^&*_+=~<>|-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
 export const ChatPane = ({
   conversation,
   currentUser,
@@ -98,6 +106,7 @@ export const ChatPane = ({
 
   const runSearch = () => {
     const query = searchText.trim().toLowerCase();
+    const normalizedQuery = normalizeForSearch(query);
 
     if (!query) {
       setSearchMatchIndexes([]);
@@ -110,7 +119,13 @@ export const ChatPane = ({
 
     allMessages.forEach((message, index) => {
       const searchLine = `${message.senderName} ${message.content}`.toLowerCase();
-      if (searchLine.includes(query)) {
+      const normalizedSearchLine = normalizeForSearch(searchLine);
+
+      if (
+        searchLine.includes(query) ||
+        (normalizedQuery.length > 0 &&
+          normalizedSearchLine.includes(normalizedQuery))
+      ) {
         matches.push(index);
       }
     });
@@ -243,6 +258,22 @@ export const ChatPane = ({
           >
             Find
           </button>
+
+          {searchText.trim().length > 0 ? (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchText("");
+                setSearchMatchIndexes([]);
+                setActiveMatchPointer(-1);
+                setHighlightedIndex(null);
+              }}
+              className="rounded-full border border-[#6a57b4] px-2 py-1 text-[11px] text-[#e8dbff] transition-all duration-200 hover:bg-[#1a1f7d] active:scale-95"
+              data-testid="chat-search-clear-button"
+            >
+              Clear
+            </button>
+          ) : null}
         </div>
 
         <button
@@ -265,7 +296,10 @@ export const ChatPane = ({
           <ChevronDown size={14} />
         </button>
 
-        <span className="text-[11px] text-[#c8b5f2]" data-testid="chat-search-results-count">
+        <span
+          className="text-[11px] text-[#c8b5f2] transition-colors duration-200"
+          data-testid="chat-search-results-count"
+        >
           {searchMatchIndexes.length > 0
             ? `${activeMatchPointer + 1}/${searchMatchIndexes.length} matches`
             : "No active search"}

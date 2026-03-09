@@ -40,6 +40,8 @@
 - Removed duplicate mobile top header by consolidating to a single unified chat header (with menu button inside it).
 - Added smoother interactions (hover/active transitions) on search and action buttons, plus glowing search focus effect.
 - Added text encoding repair for imported JSON message content so mojibake like `ð...`/`â...` renders as proper emojis and symbols.
+- Enhanced search to be punctuation-insensitive (e.g., `don't` now matches `dont`) while preserving emoji search support.
+- Added search bar clear control and extra smooth/glow interaction polish on search and action buttons.
 
 ## Prioritized Backlog
 ### P0

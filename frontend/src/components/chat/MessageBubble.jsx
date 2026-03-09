@@ -17,7 +17,7 @@ export const MessageBubble = ({
 
   return (
     <article
-      className={`flex w-full ${isMine ? "justify-end" : "justify-start"}`}
+      className={`flex w-full transition-all duration-300 ${isMine ? "justify-end" : "justify-start"}`}
       data-testid={`message-row-${index}`}
     >
       <div className="max-w-[85%] sm:max-w-[75%]">
