@@ -29,6 +29,8 @@
 - Mobile overlap design issue fixed by adding safe-area spacing in footer note section.
 - Mobile sidebar testability hardened with unique prefixed test IDs and explicit close button.
 - Applied custom visual theme matching reference style: heart background, indigo UI shell, `#472596` for Aditya bubbles, and `#E2D1FE` for Chikki bubbles.
+- Wired real user files: `chat.json`, `message_2.json`, `message_3.json` into embedded data pipeline.
+- Performance optimization for very large conversations: progressive rendering (latest 500 messages first) with **Load older messages** button to keep preview fast and responsive.
 
 ## Prioritized Backlog
 ### P0

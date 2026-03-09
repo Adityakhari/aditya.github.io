@@ -1,6 +1,8 @@
-import { Fragment } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { MessageBubble } from "@/components/chat/MessageBubble";
 import { isSamePerson } from "@/lib/nameUtils";
+
+const MESSAGE_BATCH_SIZE = 500;
 
 const getDayKey = (timestamp) => new Date(timestamp).toDateString();
 
@@ -13,6 +15,20 @@ const formatDateLabel = (timestamp) =>
   });
 
 export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
+  const [visibleCount, setVisibleCount] = useState(MESSAGE_BATCH_SIZE);
+
+  useEffect(() => {
+    setVisibleCount(MESSAGE_BATCH_SIZE);
+  }, [conversation?.id]);
+
+  const allMessages = conversation?.messages ?? [];
+  const totalMessages = allMessages.length;
+  const startIndex = Math.max(totalMessages - visibleCount, 0);
+  const visibleMessages = useMemo(
+    () => allMessages.slice(startIndex),
+    [allMessages, startIndex],
+  );
+
   if (!hasConversations || !conversation) {
     return (
       <div
@@ -48,7 +64,7 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
           </p>
         </div>
         <span className="hidden text-xs text-[#737373] sm:inline" data-testid="chat-header-message-count">
-          {conversation.messages.length} messages
+          {totalMessages} messages
         </span>
       </header>
 
@@ -56,8 +72,26 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
         className="chat-scrollbar chat-heart-bg flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-3 py-4 sm:px-6"
         data-testid="message-list"
       >
-        {conversation.messages.map((message, index) => {
-          const previousMessage = conversation.messages[index - 1];
+        {startIndex > 0 ? (
+          <div className="mb-2 flex justify-center" data-testid="load-older-wrapper">
+            <button
+              type="button"
+              onClick={() =>
+                setVisibleCount((previous) =>
+                  Math.min(previous + MESSAGE_BATCH_SIZE, totalMessages),
+                )
+              }
+              className="rounded-full border border-[#6a57b4] bg-[#1D1E84]/80 px-4 py-2 text-xs text-[#E8DBFF] transition-colors duration-200 hover:bg-[#2a2f9f]/90"
+              data-testid="load-older-messages-button"
+            >
+              Load older messages ({startIndex} remaining)
+            </button>
+          </div>
+        ) : null}
+
+        {visibleMessages.map((message, index) => {
+          const actualIndex = startIndex + index;
+          const previousMessage = allMessages[actualIndex - 1];
           const showSender = previousMessage?.senderName !== message.senderName;
           const showDateSeparator =
             !previousMessage ||
@@ -67,10 +101,10 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
           return (
             <Fragment key={message.id}>
               {showDateSeparator ? (
-                <div className="my-2 flex justify-center" data-testid={`message-date-separator-wrapper-${index}`}>
+                <div className="my-2 flex justify-center" data-testid={`message-date-separator-wrapper-${actualIndex}`}>
                   <span
                     className="rounded-full border border-[#6a57b4] bg-[#1D1E84]/80 px-3 py-1 text-[10px] uppercase tracking-wide text-[#E8DBFF]"
-                    data-testid={`message-date-separator-${index}`}
+                    data-testid={`message-date-separator-${actualIndex}`}
                   >
                     {formatDateLabel(message.timestamp)}
                   </span>
@@ -81,7 +115,7 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
                 message={message}
                 isMine={isMine}
                 showSender={showSender}
-                index={index}
+                index={actualIndex}
               />
             </Fragment>
           );
