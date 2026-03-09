@@ -339,11 +339,11 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
       </div>
 
       <div
-        className="border-t border-[#2b1f5e] bg-[#0B0F67]/90 px-4 pb-20 pt-3 backdrop-blur-sm sm:px-6 sm:pb-3"
+        className="border-t border-[#2b1f5e] bg-[#0B0F67]/90 px-4 pb-24 pt-3 backdrop-blur-sm sm:px-6 sm:pb-3"
         data-testid="chat-footer-wrapper"
       >
         <p
-          className="rounded-full border border-[#6a57b4] bg-[#1D1E84]/85 px-4 py-3 pr-20 text-xs text-[#E8DBFF] sm:pr-4"
+          className="rounded-full border border-[#6a57b4] bg-[#1D1E84]/85 px-4 py-3 pr-32 text-xs text-[#E8DBFF] sm:pr-4"
           data-testid="chat-footer-note"
         >
           Viewer Mode: Timeline merged from embedded JSON files.

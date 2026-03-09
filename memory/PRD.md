@@ -33,6 +33,7 @@
 - Performance optimization for very large conversations: progressive rendering (latest 500 messages first) with **Load older messages** button to keep preview fast and responsive.
 - Added full-text search across entire conversation history with match navigation (prev/next), auto-jump to matched message, and highlighted result bubble.
 - Added instant **Jump to latest** floating button and compact count/range indicators for better usability on large histories.
+- Re-adjusted mobile footer safe-area/right padding so environment badge does not overlap viewer note.
 
 ## Prioritized Backlog
 ### P0
