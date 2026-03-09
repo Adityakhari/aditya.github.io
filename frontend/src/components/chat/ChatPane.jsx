@@ -321,7 +321,7 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
           <button
             type="button"
             onClick={jumpToLatest}
-            className="sticky bottom-3 ml-auto flex items-center gap-2 rounded-full border border-[#6a57b4] bg-[#111870]/90 px-4 py-2 text-xs text-[#E8DBFF] shadow-lg"
+            className="sticky bottom-3 ml-1 mr-auto flex items-center gap-2 rounded-full border border-[#6a57b4] bg-[#111870]/90 px-4 py-2 text-xs text-[#E8DBFF] shadow-lg"
             data-testid="jump-to-latest-button"
           >
             Jump to latest <ChevronDown size={13} />
