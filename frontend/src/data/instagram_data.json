@@ -1,0 +1,60 @@
+{
+  "conversations": [
+    {
+      "id": "thread-1",
+      "title": "Rahul",
+      "participants": [
+        { "name": "Aditya" },
+        { "name": "Rahul" }
+      ],
+      "messages": [
+        {
+          "id": "msg-100",
+          "sender_name": "Rahul",
+          "timestamp_ms": 1730180400000,
+          "content": "Bro, are we meeting today?"
+        },
+        {
+          "id": "msg-101",
+          "sender_name": "Aditya",
+          "timestamp_ms": 1730180580000,
+          "content": "Yes, 7 PM at the cafe works for me."
+        },
+        {
+          "id": "msg-102",
+          "sender_name": "Rahul",
+          "timestamp_ms": 1730180700000,
+          "content": "Perfect. I'll share location in 10 mins."
+        },
+        {
+          "id": "msg-103",
+          "sender_name": "Aditya",
+          "timestamp_ms": 1730180880000,
+          "content": "Done, see you!"
+        }
+      ]
+    },
+    {
+      "id": "thread-2",
+      "title": "Ananya",
+      "participants": [
+        { "name": "Aditya" },
+        { "name": "Ananya" }
+      ],
+      "messages": [
+        {
+          "id": "msg-200",
+          "sender_name": "Ananya",
+          "timestamp_ms": 1730205000000,
+          "content": "Did you check the reels I sent?"
+        },
+        {
+          "id": "msg-201",
+          "sender_name": "Aditya",
+          "timestamp_ms": 1730205360000,
+          "content": "Yes 😂 That second one was hilarious."
+        }
+      ]
+    }
+  ]
+}
