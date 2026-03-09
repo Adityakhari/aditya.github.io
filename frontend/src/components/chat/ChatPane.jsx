@@ -19,6 +19,14 @@ const formatDateLabel = (timestamp) =>
 const formatCompactCount = (count) =>
   count >= 1000 ? `${(count / 1000).toFixed(1)}k` : `${count}`;
 
+const formatResultDateTime = (timestamp) =>
+  new Date(timestamp).toLocaleString([], {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
 const normalizeForSearch = (value) =>
   String(value ?? "")
     .toLowerCase()
@@ -40,6 +48,7 @@ export const ChatPane = ({
   const [activeMatchPointer, setActiveMatchPointer] = useState(-1);
   const [highlightedIndex, setHighlightedIndex] = useState(null);
   const [showScrollToLatest, setShowScrollToLatest] = useState(false);
+  const [isSearchPanelOpen, setIsSearchPanelOpen] = useState(false);
   const messageListRef = useRef(null);
 
   const allMessages = conversation?.messages ?? [];
@@ -57,6 +66,7 @@ export const ChatPane = ({
     setSearchMatchIndexes([]);
     setActiveMatchPointer(-1);
     setSearchText("");
+    setIsSearchPanelOpen(false);
   }, [conversation?.id, totalMessages]);
 
   useEffect(() => {
@@ -104,15 +114,12 @@ export const ChatPane = ({
     return () => clearTimeout(timer);
   }, [highlightedIndex, windowStart, windowEnd]);
 
-  const runSearch = () => {
-    const query = searchText.trim().toLowerCase();
+  const computeMatches = (queryValue) => {
+    const query = queryValue.trim().toLowerCase();
     const normalizedQuery = normalizeForSearch(query);
 
     if (!query) {
-      setSearchMatchIndexes([]);
-      setActiveMatchPointer(-1);
-      setHighlightedIndex(null);
-      return;
+      return [];
     }
 
     const matches = [];
@@ -130,17 +137,51 @@ export const ChatPane = ({
       }
     });
 
+    return matches;
+  };
+
+  const runSearch = (shouldFocusFirst = true) => {
+    const query = searchText.trim().toLowerCase();
+
+    if (!query) {
+      setSearchMatchIndexes([]);
+      setActiveMatchPointer(-1);
+      setHighlightedIndex(null);
+      setIsSearchPanelOpen(false);
+      return;
+    }
+
+    const matches = computeMatches(query);
+
     setSearchMatchIndexes(matches);
+    setIsSearchPanelOpen(true);
+
+    if (matches.length > 0 && shouldFocusFirst) {
+      setActiveMatchPointer(0);
+      focusMessageIndex(matches[0]);
+      return;
+    }
 
     if (matches.length > 0) {
       setActiveMatchPointer(0);
-      focusMessageIndex(matches[0]);
       return;
     }
 
     setActiveMatchPointer(-1);
     setHighlightedIndex(null);
   };
+
+  const searchResultItems = useMemo(
+    () =>
+      searchMatchIndexes.slice(0, 120).map((matchIndex, resultIndex) => ({
+        resultIndex,
+        matchIndex,
+        senderName: allMessages[matchIndex]?.senderName ?? "Unknown",
+        content: allMessages[matchIndex]?.content ?? "",
+        timestamp: allMessages[matchIndex]?.timestamp ?? Date.now(),
+      })),
+    [allMessages, searchMatchIndexes],
+  );
 
   const jumpToMatch = (direction) => {
     if (searchMatchIndexes.length === 0) {
@@ -240,10 +281,31 @@ export const ChatPane = ({
           <Search size={14} className="text-[#E8DBFF]" />
           <input
             value={searchText}
-            onChange={(event) => setSearchText(event.target.value)}
+            onChange={(event) => {
+              const nextValue = event.target.value;
+              setSearchText(nextValue);
+
+              if (!nextValue.trim()) {
+                setSearchMatchIndexes([]);
+                setActiveMatchPointer(-1);
+                setHighlightedIndex(null);
+                setIsSearchPanelOpen(false);
+                return;
+              }
+
+              const liveMatches = computeMatches(nextValue);
+              setSearchMatchIndexes(liveMatches);
+              setActiveMatchPointer(liveMatches.length > 0 ? 0 : -1);
+              setIsSearchPanelOpen(true);
+            }}
+            onFocus={() => {
+              if (searchText.trim().length > 0) {
+                setIsSearchPanelOpen(true);
+              }
+            }}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
-                runSearch();
+                runSearch(true);
               }
             }}
             placeholder="Search all messages"
@@ -252,7 +314,7 @@ export const ChatPane = ({
           />
           <button
             type="button"
-            onClick={runSearch}
+            onClick={() => runSearch(true)}
             className="rounded-full bg-[#472596] px-2 py-1 text-[11px] text-[#f5ecff] transition-all duration-200 hover:shadow-[0_0_14px_rgba(206,136,255,0.75)] active:scale-95"
             data-testid="chat-search-submit-button"
           >
@@ -267,6 +329,7 @@ export const ChatPane = ({
                 setSearchMatchIndexes([]);
                 setActiveMatchPointer(-1);
                 setHighlightedIndex(null);
+                setIsSearchPanelOpen(false);
               }}
               className="rounded-full border border-[#6a57b4] px-2 py-1 text-[11px] text-[#e8dbff] transition-all duration-200 hover:bg-[#1a1f7d] active:scale-95"
               data-testid="chat-search-clear-button"
@@ -301,10 +364,57 @@ export const ChatPane = ({
           data-testid="chat-search-results-count"
         >
           {searchMatchIndexes.length > 0
-            ? `${activeMatchPointer + 1}/${searchMatchIndexes.length} matches`
+            ? activeMatchPointer >= 0
+              ? `${activeMatchPointer + 1}/${searchMatchIndexes.length} matches`
+              : `${searchMatchIndexes.length} matches`
             : "No active search"}
         </span>
       </div>
+
+      {isSearchPanelOpen && searchText.trim().length > 0 ? (
+        <div
+          className="max-h-52 overflow-y-auto border-b border-[#2b1f5e] bg-[#0B0F67]/82 px-4 py-2 sm:px-6"
+          data-testid="chat-search-results-panel"
+        >
+          {searchResultItems.length > 0 ? (
+            searchResultItems.map((item) => (
+              <button
+                type="button"
+                key={`search-result-${item.matchIndex}`}
+                onClick={() => {
+                  const pointerIndex = searchMatchIndexes.findIndex(
+                    (value) => value === item.matchIndex,
+                  );
+                  setActiveMatchPointer(pointerIndex);
+                  focusMessageIndex(item.matchIndex);
+                  setIsSearchPanelOpen(false);
+                }}
+                className="mb-1 flex w-full flex-col rounded-xl border border-transparent px-3 py-2 text-left transition-all duration-200 hover:border-[#6a57b4] hover:bg-[#1a1f7d]/70"
+                data-testid={`chat-search-result-item-${item.resultIndex}`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-medium text-[#efe6ff]" data-testid={`chat-search-result-sender-${item.resultIndex}`}>
+                    {getDisplayName(item.senderName)}
+                  </span>
+                  <span className="text-[10px] text-[#bfa8ec]" data-testid={`chat-search-result-time-${item.resultIndex}`}>
+                    {formatResultDateTime(item.timestamp)}
+                  </span>
+                </div>
+                <span
+                  className="mt-1 line-clamp-1 text-xs text-[#d7c5ff]"
+                  data-testid={`chat-search-result-content-${item.resultIndex}`}
+                >
+                  {item.content || "(empty message)"}
+                </span>
+              </button>
+            ))
+          ) : (
+            <p className="text-xs text-[#c8b5f2]" data-testid="chat-search-no-results-text">
+              No messages found for this search.
+            </p>
+          )}
+        </div>
+      ) : null}
 
       <div
         ref={messageListRef}

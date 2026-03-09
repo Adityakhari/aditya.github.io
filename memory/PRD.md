@@ -42,6 +42,7 @@
 - Added text encoding repair for imported JSON message content so mojibake like `ð...`/`â...` renders as proper emojis and symbols.
 - Enhanced search to be punctuation-insensitive (e.g., `don't` now matches `dont`) while preserving emoji search support.
 - Added search bar clear control and extra smooth/glow interaction polish on search and action buttons.
+- Added Instagram-style search results panel under the search bar: each result shows sender, message preview, and date/time; tapping a result jumps to and highlights that exact message.
 
 ## Prioritized Backlog
 ### P0
