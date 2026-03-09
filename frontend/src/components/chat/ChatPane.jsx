@@ -1,4 +1,5 @@
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { ChevronDown, ChevronUp, Search } from "lucide-react";
 import { MessageBubble } from "@/components/chat/MessageBubble";
 import { isSamePerson } from "@/lib/nameUtils";
 
@@ -14,20 +15,140 @@ const formatDateLabel = (timestamp) =>
     year: "numeric",
   });
 
-export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
-  const [visibleCount, setVisibleCount] = useState(MESSAGE_BATCH_SIZE);
+const formatCompactCount = (count) =>
+  count >= 1000 ? `${(count / 1000).toFixed(1)}k` : `${count}`;
 
-  useEffect(() => {
-    setVisibleCount(MESSAGE_BATCH_SIZE);
-  }, [conversation?.id]);
+export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
+  const [windowStart, setWindowStart] = useState(0);
+  const [windowEnd, setWindowEnd] = useState(MESSAGE_BATCH_SIZE);
+  const [searchText, setSearchText] = useState("");
+  const [searchMatchIndexes, setSearchMatchIndexes] = useState([]);
+  const [activeMatchPointer, setActiveMatchPointer] = useState(-1);
+  const [highlightedIndex, setHighlightedIndex] = useState(null);
+  const [showScrollToLatest, setShowScrollToLatest] = useState(false);
+  const messageListRef = useRef(null);
 
   const allMessages = conversation?.messages ?? [];
   const totalMessages = allMessages.length;
-  const startIndex = Math.max(totalMessages - visibleCount, 0);
   const visibleMessages = useMemo(
-    () => allMessages.slice(startIndex),
-    [allMessages, startIndex],
+    () => allMessages.slice(windowStart, windowEnd),
+    [allMessages, windowStart, windowEnd],
   );
+
+  useEffect(() => {
+    const latestStart = Math.max(totalMessages - MESSAGE_BATCH_SIZE, 0);
+    setWindowStart(latestStart);
+    setWindowEnd(totalMessages);
+    setHighlightedIndex(null);
+    setSearchMatchIndexes([]);
+    setActiveMatchPointer(-1);
+    setSearchText("");
+  }, [conversation?.id, totalMessages]);
+
+  useEffect(() => {
+    const container = messageListRef.current;
+    if (!container) {
+      return;
+    }
+
+    const onScroll = () => {
+      const distanceFromBottom =
+        container.scrollHeight - container.scrollTop - container.clientHeight;
+      setShowScrollToLatest(distanceFromBottom > 220);
+    };
+
+    onScroll();
+    container.addEventListener("scroll", onScroll);
+    return () => container.removeEventListener("scroll", onScroll);
+  }, [windowStart, windowEnd, visibleMessages.length]);
+
+  const focusMessageIndex = (index) => {
+    setHighlightedIndex(index);
+
+    const centeredStart = Math.max(index - Math.floor(MESSAGE_BATCH_SIZE / 2), 0);
+    const centeredEnd = Math.min(centeredStart + MESSAGE_BATCH_SIZE, totalMessages);
+    const adjustedStart = Math.max(centeredEnd - MESSAGE_BATCH_SIZE, 0);
+
+    setWindowStart(adjustedStart);
+    setWindowEnd(centeredEnd);
+  };
+
+  useEffect(() => {
+    if (highlightedIndex === null) {
+      return;
+    }
+
+    if (highlightedIndex < windowStart || highlightedIndex >= windowEnd) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      const element = document.getElementById(`message-anchor-${highlightedIndex}`);
+      element?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 130);
+
+    return () => clearTimeout(timer);
+  }, [highlightedIndex, windowStart, windowEnd]);
+
+  const runSearch = () => {
+    const query = searchText.trim().toLowerCase();
+
+    if (!query) {
+      setSearchMatchIndexes([]);
+      setActiveMatchPointer(-1);
+      setHighlightedIndex(null);
+      return;
+    }
+
+    const matches = [];
+
+    allMessages.forEach((message, index) => {
+      const searchLine = `${message.senderName} ${message.content}`.toLowerCase();
+      if (searchLine.includes(query)) {
+        matches.push(index);
+      }
+    });
+
+    setSearchMatchIndexes(matches);
+
+    if (matches.length > 0) {
+      setActiveMatchPointer(0);
+      focusMessageIndex(matches[0]);
+      return;
+    }
+
+    setActiveMatchPointer(-1);
+    setHighlightedIndex(null);
+  };
+
+  const jumpToMatch = (direction) => {
+    if (searchMatchIndexes.length === 0) {
+      return;
+    }
+
+    const nextPointer =
+      direction === "next"
+        ? (activeMatchPointer + 1) % searchMatchIndexes.length
+        : (activeMatchPointer - 1 + searchMatchIndexes.length) %
+          searchMatchIndexes.length;
+
+    setActiveMatchPointer(nextPointer);
+    focusMessageIndex(searchMatchIndexes[nextPointer]);
+  };
+
+  const jumpToLatest = () => {
+    const latestStart = Math.max(totalMessages - MESSAGE_BATCH_SIZE, 0);
+    setWindowStart(latestStart);
+    setWindowEnd(totalMessages);
+    setHighlightedIndex(null);
+
+    setTimeout(() => {
+      messageListRef.current?.scrollTo({
+        top: messageListRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }, 80);
+  };
 
   if (!hasConversations || !conversation) {
     return (
@@ -52,7 +173,7 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
   return (
     <div className="flex min-h-0 flex-1 flex-col" data-testid="chat-pane">
       <header
-        className="flex h-[60px] shrink-0 items-center justify-between border-b border-[#2b1f5e] bg-[#0B0F67]/85 px-4 backdrop-blur-sm md:px-6"
+        className="flex min-h-[60px] shrink-0 items-center justify-between border-b border-[#2b1f5e] bg-[#0B0F67]/85 px-4 backdrop-blur-sm md:px-6"
         data-testid="chat-header"
       >
         <div className="min-w-0">
@@ -63,34 +184,113 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
             {conversation.participants.join(" • ")}
           </p>
         </div>
-        <span className="hidden text-xs text-[#737373] sm:inline" data-testid="chat-header-message-count">
-          {totalMessages} messages
+
+        <span className="ml-3 text-xs text-[#c8b5f2]" data-testid="chat-header-message-count">
+          {formatCompactCount(totalMessages)} total
         </span>
       </header>
 
       <div
+        className="flex flex-wrap items-center gap-2 border-b border-[#2b1f5e] bg-[#0B0F67]/80 px-4 py-2 sm:px-6"
+        data-testid="chat-search-toolbar"
+      >
+        <div className="flex min-w-[220px] flex-1 items-center gap-2 rounded-full border border-[#6a57b4] bg-[#111870]/90 px-3 py-1.5">
+          <Search size={14} className="text-[#E8DBFF]" />
+          <input
+            value={searchText}
+            onChange={(event) => setSearchText(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                runSearch();
+              }
+            }}
+            placeholder="Search all messages"
+            className="w-full bg-transparent text-xs text-[#F3EAFF] outline-none placeholder:text-[#bca8ea]"
+            data-testid="chat-search-input"
+          />
+          <button
+            type="button"
+            onClick={runSearch}
+            className="rounded-full bg-[#472596] px-2 py-1 text-[11px] text-[#f5ecff]"
+            data-testid="chat-search-submit-button"
+          >
+            Find
+          </button>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => jumpToMatch("prev")}
+          className="rounded-full border border-[#6a57b4] p-1.5 text-[#E8DBFF] disabled:opacity-40"
+          disabled={searchMatchIndexes.length === 0}
+          data-testid="chat-search-prev-button"
+        >
+          <ChevronUp size={14} />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => jumpToMatch("next")}
+          className="rounded-full border border-[#6a57b4] p-1.5 text-[#E8DBFF] disabled:opacity-40"
+          disabled={searchMatchIndexes.length === 0}
+          data-testid="chat-search-next-button"
+        >
+          <ChevronDown size={14} />
+        </button>
+
+        <span className="text-[11px] text-[#c8b5f2]" data-testid="chat-search-results-count">
+          {searchMatchIndexes.length > 0
+            ? `${activeMatchPointer + 1}/${searchMatchIndexes.length} matches`
+            : "No active search"}
+        </span>
+      </div>
+
+      <div
+        ref={messageListRef}
         className="chat-scrollbar chat-heart-bg flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-3 py-4 sm:px-6"
         data-testid="message-list"
       >
-        {startIndex > 0 ? (
+        <div className="flex items-center justify-center" data-testid="message-range-indicator-wrapper">
+          <p
+            className="rounded-full border border-[#6a57b4] bg-[#111870]/80 px-3 py-1 text-[10px] text-[#E8DBFF]"
+            data-testid="message-range-indicator"
+          >
+            Showing {visibleMessages.length} of {formatCompactCount(totalMessages)} messages
+          </p>
+        </div>
+
+        {windowStart > 0 ? (
           <div className="mb-2 flex justify-center" data-testid="load-older-wrapper">
             <button
               type="button"
+              onClick={() => setWindowStart((previous) => Math.max(previous - MESSAGE_BATCH_SIZE, 0))}
+              className="rounded-full border border-[#6a57b4] bg-[#1D1E84]/80 px-4 py-2 text-xs text-[#E8DBFF] transition-colors duration-200 hover:bg-[#2a2f9f]/90"
+              data-testid="load-older-messages-button"
+            >
+              Show previous {Math.min(MESSAGE_BATCH_SIZE, windowStart)} messages
+            </button>
+          </div>
+        ) : null}
+
+        {windowEnd < totalMessages ? (
+          <div className="mb-2 flex justify-center" data-testid="load-newer-wrapper">
+            <button
+              type="button"
               onClick={() =>
-                setVisibleCount((previous) =>
+                setWindowEnd((previous) =>
                   Math.min(previous + MESSAGE_BATCH_SIZE, totalMessages),
                 )
               }
               className="rounded-full border border-[#6a57b4] bg-[#1D1E84]/80 px-4 py-2 text-xs text-[#E8DBFF] transition-colors duration-200 hover:bg-[#2a2f9f]/90"
-              data-testid="load-older-messages-button"
+              data-testid="load-newer-messages-button"
             >
-              Load older messages ({startIndex} remaining)
+              Show newer messages
             </button>
           </div>
         ) : null}
 
         {visibleMessages.map((message, index) => {
-          const actualIndex = startIndex + index;
+          const actualIndex = windowStart + index;
           const previousMessage = allMessages[actualIndex - 1];
           const showSender = previousMessage?.senderName !== message.senderName;
           const showDateSeparator =
@@ -111,15 +311,31 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
                 </div>
               ) : null}
 
-              <MessageBubble
-                message={message}
-                isMine={isMine}
-                showSender={showSender}
-                index={actualIndex}
-              />
+              <div id={`message-anchor-${actualIndex}`} data-testid={`message-anchor-${actualIndex}`}>
+                <MessageBubble
+                  message={message}
+                  isMine={isMine}
+                  showSender={showSender}
+                  index={actualIndex}
+                  isHighlighted={actualIndex === highlightedIndex}
+                />
+              </div>
             </Fragment>
           );
         })}
+
+        <div className="h-2" data-testid="message-list-bottom-anchor" />
+
+        {showScrollToLatest ? (
+          <button
+            type="button"
+            onClick={jumpToLatest}
+            className="sticky bottom-3 ml-auto flex items-center gap-2 rounded-full border border-[#6a57b4] bg-[#111870]/90 px-4 py-2 text-xs text-[#E8DBFF] shadow-lg"
+            data-testid="jump-to-latest-button"
+          >
+            Jump to latest <ChevronDown size={13} />
+          </button>
+        ) : null}
       </div>
 
       <div

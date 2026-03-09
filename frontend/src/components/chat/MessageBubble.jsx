@@ -6,7 +6,13 @@ const formatTimestamp = (timestamp) =>
     minute: "2-digit",
   });
 
-export const MessageBubble = ({ message, isMine, showSender, index }) => {
+export const MessageBubble = ({
+  message,
+  isMine,
+  showSender,
+  index,
+  isHighlighted,
+}) => {
   const isAdityaMessage = isSamePerson(message.senderName, "Aditya");
 
   return (
@@ -29,6 +35,10 @@ export const MessageBubble = ({ message, isMine, showSender, index }) => {
             isAdityaMessage
               ? "rounded-bl-md bg-[#472596] text-[#F6EDFF]"
               : "rounded-br-md bg-[#E2D1FE] text-[#1C0F36]"
+          } ${
+            isHighlighted
+              ? "outline outline-2 outline-[#ff67ef] shadow-[0_0_26px_rgba(255,90,245,0.75)]"
+              : ""
           }`}
           data-testid={`message-bubble-${index}`}
         >

@@ -31,6 +31,8 @@
 - Applied custom visual theme matching reference style: heart background, indigo UI shell, `#472596` for Aditya bubbles, and `#E2D1FE` for Chikki bubbles.
 - Wired real user files: `chat.json`, `message_2.json`, `message_3.json` into embedded data pipeline.
 - Performance optimization for very large conversations: progressive rendering (latest 500 messages first) with **Load older messages** button to keep preview fast and responsive.
+- Added full-text search across entire conversation history with match navigation (prev/next), auto-jump to matched message, and highlighted result bubble.
+- Added instant **Jump to latest** floating button and compact count/range indicators for better usability on large histories.
 
 ## Prioritized Backlog
 ### P0
