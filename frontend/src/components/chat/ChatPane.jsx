@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, ChevronUp, Search } from "lucide-react";
+import { ChevronDown, ChevronUp, Menu, Search } from "lucide-react";
 import { MessageBubble } from "@/components/chat/MessageBubble";
 import { getDisplayName, isSamePerson } from "@/lib/nameUtils";
 import { AADI_PROFILE_IMAGES } from "@/lib/profileImages";
@@ -19,7 +19,12 @@ const formatDateLabel = (timestamp) =>
 const formatCompactCount = (count) =>
   count >= 1000 ? `${(count / 1000).toFixed(1)}k` : `${count}`;
 
-export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
+export const ChatPane = ({
+  conversation,
+  currentUser,
+  hasConversations,
+  onMobileMenuOpen,
+}) => {
   const [windowStart, setWindowStart] = useState(0);
   const [windowEnd, setWindowEnd] = useState(MESSAGE_BATCH_SIZE);
   const [searchText, setSearchText] = useState("");
@@ -179,6 +184,14 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
       >
         <div className="min-w-0">
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onMobileMenuOpen}
+              className="rounded-full border border-[#5f54a0] p-1.5 text-[#E8DBFF] transition-all duration-200 hover:bg-[#1a1f7d] active:scale-95 md:hidden"
+              data-testid="mobile-open-sidebar-button"
+            >
+              <Menu size={15} />
+            </button>
             <h2 className="truncate text-base font-semibold" data-testid="chat-header-title">
               {getDisplayName(conversation.title)}
             </h2>
@@ -208,7 +221,7 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
         className="flex flex-wrap items-center gap-2 border-b border-[#2b1f5e] bg-[#0B0F67]/80 px-4 py-1.5 sm:px-6"
         data-testid="chat-search-toolbar"
       >
-        <div className="flex min-w-[220px] flex-1 items-center gap-2 rounded-full border border-[#6a57b4] bg-[#111870]/90 px-3 py-1.5">
+        <div className="flex min-w-[220px] flex-1 items-center gap-2 rounded-full border border-[#6a57b4] bg-[#111870]/90 px-3 py-1.5 transition-all duration-300 focus-within:shadow-[0_0_18px_rgba(213,153,255,0.55)]">
           <Search size={14} className="text-[#E8DBFF]" />
           <input
             value={searchText}
@@ -225,7 +238,7 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
           <button
             type="button"
             onClick={runSearch}
-            className="rounded-full bg-[#472596] px-2 py-1 text-[11px] text-[#f5ecff]"
+            className="rounded-full bg-[#472596] px-2 py-1 text-[11px] text-[#f5ecff] transition-all duration-200 hover:shadow-[0_0_14px_rgba(206,136,255,0.75)] active:scale-95"
             data-testid="chat-search-submit-button"
           >
             Find
@@ -235,7 +248,7 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
         <button
           type="button"
           onClick={() => jumpToMatch("prev")}
-          className="rounded-full border border-[#6a57b4] p-1.5 text-[#E8DBFF] disabled:opacity-40"
+          className="rounded-full border border-[#6a57b4] p-1.5 text-[#E8DBFF] transition-all duration-200 hover:bg-[#1a1f7d] active:scale-95 disabled:opacity-40"
           disabled={searchMatchIndexes.length === 0}
           data-testid="chat-search-prev-button"
         >
@@ -245,7 +258,7 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
         <button
           type="button"
           onClick={() => jumpToMatch("next")}
-          className="rounded-full border border-[#6a57b4] p-1.5 text-[#E8DBFF] disabled:opacity-40"
+          className="rounded-full border border-[#6a57b4] p-1.5 text-[#E8DBFF] transition-all duration-200 hover:bg-[#1a1f7d] active:scale-95 disabled:opacity-40"
           disabled={searchMatchIndexes.length === 0}
           data-testid="chat-search-next-button"
         >
@@ -269,7 +282,7 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
             <button
               type="button"
               onClick={() => setWindowStart((previous) => Math.max(previous - MESSAGE_BATCH_SIZE, 0))}
-              className="rounded-full border border-[#6a57b4] bg-[#1D1E84]/80 px-4 py-2 text-xs text-[#E8DBFF] transition-colors duration-200 hover:bg-[#2a2f9f]/90"
+              className="rounded-full border border-[#6a57b4] bg-[#1D1E84]/80 px-4 py-2 text-xs text-[#E8DBFF] transition-all duration-200 hover:bg-[#2a2f9f]/90 hover:shadow-[0_0_12px_rgba(171,124,255,0.45)] active:scale-95"
               data-testid="load-older-messages-button"
             >
               Show previous {Math.min(MESSAGE_BATCH_SIZE, windowStart)} messages
@@ -286,7 +299,7 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
                   Math.min(previous + MESSAGE_BATCH_SIZE, totalMessages),
                 )
               }
-              className="rounded-full border border-[#6a57b4] bg-[#1D1E84]/80 px-4 py-2 text-xs text-[#E8DBFF] transition-colors duration-200 hover:bg-[#2a2f9f]/90"
+              className="rounded-full border border-[#6a57b4] bg-[#1D1E84]/80 px-4 py-2 text-xs text-[#E8DBFF] transition-all duration-200 hover:bg-[#2a2f9f]/90 hover:shadow-[0_0_12px_rgba(171,124,255,0.45)] active:scale-95"
               data-testid="load-newer-messages-button"
             >
               Show newer messages
@@ -335,7 +348,7 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
           <button
             type="button"
             onClick={jumpToLatest}
-            className="sticky bottom-3 ml-1 mr-auto flex items-center gap-2 rounded-full border border-[#6a57b4] bg-[#111870]/90 px-4 py-2 text-xs text-[#E8DBFF] shadow-lg"
+            className="sticky bottom-3 ml-1 mr-auto flex items-center gap-2 rounded-full border border-[#6a57b4] bg-[#111870]/90 px-4 py-2 text-xs text-[#E8DBFF] shadow-lg transition-all duration-200 hover:bg-[#1a1f7d] hover:shadow-[0_0_14px_rgba(171,124,255,0.5)] active:scale-95"
             data-testid="jump-to-latest-button"
           >
             Jump to latest <ChevronDown size={13} />

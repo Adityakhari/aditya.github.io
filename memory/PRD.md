@@ -37,6 +37,9 @@
 - Updated display name mapping from "Aditya" to "Aadi" across UI labels.
 - Updated header subtitle copy to: "Aadi is sorry" and removed bottom embedded-data footer note to maximize chat viewport space.
 - Added two circular profile images (user-provided) next to "Aadi" in both desktop chat header and mobile top bar.
+- Removed duplicate mobile top header by consolidating to a single unified chat header (with menu button inside it).
+- Added smoother interactions (hover/active transitions) on search and action buttons, plus glowing search focus effect.
+- Added text encoding repair for imported JSON message content so mojibake like `ð...`/`â...` renders as proper emojis and symbols.
 
 ## Prioritized Backlog
 ### P0

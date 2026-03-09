@@ -10,8 +10,24 @@ const safeString = (value, fallback = "") => {
   return fallback;
 };
 
+const repairTextEncoding = (input) => {
+  const text = safeString(input);
+
+  if (!/[ðâÃ]/.test(text)) {
+    return text;
+  }
+
+  try {
+    const bytes = Uint8Array.from(text, (char) => char.charCodeAt(0));
+    const repaired = new TextDecoder("utf-8", { fatal: false }).decode(bytes);
+    return repaired || text;
+  } catch {
+    return text;
+  }
+};
+
 const getPreviewText = (content) => {
-  const text = safeString(content);
+  const text = repairTextEncoding(content);
   return text.trim().length > 0 ? text : "(empty message)";
 };
 
@@ -30,11 +46,10 @@ const normalizeMessage = (message, index) => {
 
   return {
     id: safeString(message.id, `msg-${index}-${timestamp}`),
-    senderName: safeString(
+    senderName: repairTextEncoding(
       message.sender_name ?? message.senderName ?? message.sender ?? message.from,
-      "Unknown",
     ),
-    content: safeString(message.content ?? message.text ?? message.message),
+    content: repairTextEncoding(message.content ?? message.text ?? message.message),
     timestamp,
   };
 };
@@ -68,7 +83,7 @@ const mergeMessageFiles = (files, currentUser) => {
 
   const allParticipants = filesWithMessages
     .flatMap((file) => file.participants ?? [])
-    .map((item) => safeString(item?.name ?? item?.username ?? item))
+    .map((item) => repairTextEncoding(item?.name ?? item?.username ?? item))
     .filter(Boolean);
 
   const uniqueParticipants = [...new Set(allParticipants)];
@@ -89,7 +104,7 @@ const mergeMessageFiles = (files, currentUser) => {
   return [
     {
       id: safeString(firstFile.id ?? "merged-instagram-thread"),
-      title: safeString(
+      title: repairTextEncoding(
         firstFile.conversation_title ??
           firstFile.title ??
           firstFile.chat_with ??
@@ -140,7 +155,7 @@ const getRawConversations = (rawData, currentUser) => {
 
 const normalizeConversation = (conversation, index, currentUser) => {
   const participants = (conversation.participants ?? [])
-    .map((item) => safeString(item?.name ?? item?.username ?? item))
+    .map((item) => repairTextEncoding(item?.name ?? item?.username ?? item))
     .filter(Boolean);
 
   const otherParticipants = participants.filter(
@@ -151,7 +166,7 @@ const normalizeConversation = (conversation, index, currentUser) => {
     .sort((first, second) => first.timestamp - second.timestamp);
 
   const lastMessage = messages.at(-1);
-  const rawTitle = safeString(conversation.title);
+  const rawTitle = repairTextEncoding(conversation.title);
   const title =
     rawTitle && !isSamePerson(rawTitle, currentUser)
       ? rawTitle
