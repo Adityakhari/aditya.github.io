@@ -60,8 +60,14 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
         })}
       </div>
 
-      <div className="border-t border-[#262626] px-4 py-3 md:px-6" data-testid="chat-footer-wrapper">
-        <p className="rounded-full border border-[#262626] bg-[#121212] px-4 py-3 text-xs text-[#A8A8A8]" data-testid="chat-footer-note">
+      <div
+        className="border-t border-[#262626] px-4 pb-20 pt-3 sm:px-6 sm:pb-3"
+        data-testid="chat-footer-wrapper"
+      >
+        <p
+          className="rounded-full border border-[#262626] bg-[#121212] px-4 py-3 pr-20 text-xs text-[#A8A8A8] sm:pr-4"
+          data-testid="chat-footer-note"
+        >
           Viewer Mode: Messages are loaded from embedded JSON.
         </p>
       </div>
