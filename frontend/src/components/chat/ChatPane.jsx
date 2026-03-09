@@ -2,6 +2,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, ChevronUp, Search } from "lucide-react";
 import { MessageBubble } from "@/components/chat/MessageBubble";
 import { getDisplayName, isSamePerson } from "@/lib/nameUtils";
+import { AADI_PROFILE_IMAGES } from "@/lib/profileImages";
 
 const MESSAGE_BATCH_SIZE = 500;
 
@@ -177,9 +178,22 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
         data-testid="chat-header"
       >
         <div className="min-w-0">
-          <h2 className="truncate text-base font-semibold" data-testid="chat-header-title">
-            {getDisplayName(conversation.title)}
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="truncate text-base font-semibold" data-testid="chat-header-title">
+              {getDisplayName(conversation.title)}
+            </h2>
+            <div className="flex -space-x-2" data-testid="chat-header-profile-circles">
+              {AADI_PROFILE_IMAGES.map((imageUrl, index) => (
+                <img
+                  key={imageUrl}
+                  src={imageUrl}
+                  alt={`Aadi profile ${index + 1}`}
+                  className="h-6 w-6 rounded-full border border-[#6a57b4] object-cover"
+                  data-testid={`chat-header-profile-circle-${index + 1}`}
+                />
+              ))}
+            </div>
+          </div>
           <p className="mt-0.5 truncate text-xs text-[#A8A8A8]" data-testid="chat-header-subtitle">
             Aadi is sorry
           </p>

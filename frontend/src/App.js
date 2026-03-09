@@ -3,6 +3,7 @@ import "@/App.css";
 import { Menu } from "lucide-react";
 import { parseInstagramData } from "@/lib/instagramParser";
 import { getDisplayName } from "@/lib/nameUtils";
+import { AADI_PROFILE_IMAGES } from "@/lib/profileImages";
 import { ConversationSidebar } from "@/components/chat/ConversationSidebar";
 import { ChatPane } from "@/components/chat/ChatPane";
 import { embeddedInstagramFiles } from "@/data/embeddedInstagramFiles";
@@ -72,12 +73,25 @@ function App() {
             >
               <Menu size={18} />
             </button>
-            <p
-              className="ml-3 text-sm font-medium"
-              data-testid="mobile-active-conversation-name"
-            >
-              {getDisplayName(activeConversation?.title ?? "No Conversation")}
-            </p>
+            <div className="ml-3 flex items-center gap-2">
+              <p
+                className="text-sm font-medium"
+                data-testid="mobile-active-conversation-name"
+              >
+                {getDisplayName(activeConversation?.title ?? "No Conversation")}
+              </p>
+              <div className="flex -space-x-2" data-testid="mobile-header-profile-circles">
+                {AADI_PROFILE_IMAGES.map((imageUrl, index) => (
+                  <img
+                    key={imageUrl}
+                    src={imageUrl}
+                    alt={`Aadi mobile profile ${index + 1}`}
+                    className="h-5 w-5 rounded-full border border-[#6a57b4] object-cover"
+                    data-testid={`mobile-header-profile-circle-${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
 
           <ChatPane

@@ -36,6 +36,7 @@
 - Re-adjusted mobile footer safe-area/right padding so environment badge does not overlap viewer note.
 - Updated display name mapping from "Aditya" to "Aadi" across UI labels.
 - Updated header subtitle copy to: "Aadi is sorry" and removed bottom embedded-data footer note to maximize chat viewport space.
+- Added two circular profile images (user-provided) next to "Aadi" in both desktop chat header and mobile top bar.
 
 ## Prioritized Backlog
 ### P0
