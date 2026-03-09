@@ -4,13 +4,13 @@ import { Menu } from "lucide-react";
 import { parseInstagramData } from "@/lib/instagramParser";
 import { ConversationSidebar } from "@/components/chat/ConversationSidebar";
 import { ChatPane } from "@/components/chat/ChatPane";
-import instagramData from "@/data/instagram_data.json";
+import { embeddedInstagramFiles } from "@/data/embeddedInstagramFiles";
 
 const USER_NAME = "Aditya";
 
 function App() {
   const conversations = useMemo(
-    () => parseInstagramData(instagramData, USER_NAME),
+    () => parseInstagramData(embeddedInstagramFiles, USER_NAME),
     [],
   );
 

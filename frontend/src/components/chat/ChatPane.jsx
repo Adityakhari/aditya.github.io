@@ -1,4 +1,15 @@
+import { Fragment } from "react";
 import { MessageBubble } from "@/components/chat/MessageBubble";
+
+const getDayKey = (timestamp) => new Date(timestamp).toDateString();
+
+const formatDateLabel = (timestamp) =>
+  new Date(timestamp).toLocaleDateString([], {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 
 export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
   if (!hasConversations || !conversation) {
@@ -12,7 +23,8 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
             No messages yet
           </h2>
           <p className="text-sm text-[#A8A8A8]" data-testid="chat-empty-description">
-            Embed your Instagram JSON in <code>src/data/instagram_data.json</code>
+            Embed your Instagram JSON files in
+            <code> src/data/embeddedInstagramFiles.js </code>
             to display chats.
           </p>
         </div>
@@ -46,16 +58,31 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
         {conversation.messages.map((message, index) => {
           const previousMessage = conversation.messages[index - 1];
           const showSender = previousMessage?.senderName !== message.senderName;
+          const showDateSeparator =
+            !previousMessage ||
+            getDayKey(previousMessage.timestamp) !== getDayKey(message.timestamp);
           const isMine = message.senderName === currentUser;
 
           return (
-            <MessageBubble
-              key={message.id}
-              message={message}
-              isMine={isMine}
-              showSender={showSender}
-              index={index}
-            />
+            <Fragment key={message.id}>
+              {showDateSeparator ? (
+                <div className="my-2 flex justify-center" data-testid={`message-date-separator-wrapper-${index}`}>
+                  <span
+                    className="rounded-full border border-[#2c2c2c] bg-[#0e0e0e] px-3 py-1 text-[10px] uppercase tracking-wide text-[#A8A8A8]"
+                    data-testid={`message-date-separator-${index}`}
+                  >
+                    {formatDateLabel(message.timestamp)}
+                  </span>
+                </div>
+              ) : null}
+
+              <MessageBubble
+                message={message}
+                isMine={isMine}
+                showSender={showSender}
+                index={index}
+              />
+            </Fragment>
           );
         })}
       </div>
@@ -68,7 +95,7 @@ export const ChatPane = ({ conversation, currentUser, hasConversations }) => {
           className="rounded-full border border-[#262626] bg-[#121212] px-4 py-3 pr-20 text-xs text-[#A8A8A8] sm:pr-4"
           data-testid="chat-footer-note"
         >
-          Viewer Mode: Messages are loaded from embedded JSON.
+          Viewer Mode: Timeline merged from embedded JSON files.
         </p>
       </div>
     </div>

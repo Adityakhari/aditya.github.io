@@ -5,20 +5,23 @@
 
 ## User Choices
 - UI: Instagram dark mode
-- Data source: Embedded JSON in app code
-- Message rendering: Two-sided chat (Aditya vs sender)
+- Data source: Embedded JSON in app code (3 JSON files)
+- Message rendering: Two-sided chat (Aditya vs Chikki)
 - Current user name: "Aditya"
+- Single conversation timeline merged from all files
+- Include dates and timings
 
 ## Architecture Decisions
 - Frontend-first MVP implemented in React with modular components.
-- Embedded data file at `frontend/src/data/instagram_data.json` for direct JSON import.
-- Parsing layer (`instagramParser.js`) built to support multiple Instagram-like JSON shapes (`conversations`, `inbox.conversations`, `messages`, root array).
+- Embedded multi-file source at `frontend/src/data/embeddedInstagramFiles.js` importing 3 JSON parts.
+- Parsing layer (`instagramParser.js`) supports merging multiple message files into one chronological timeline.
 - No backend persistence/API dependency for this MVP to keep import flow simple and fast.
 
 ## Implemented
 - Instagram-like responsive dark layout with conversation sidebar + chat pane.
-- Two-sided message bubbles: right for Aditya, left for other senders.
-- Conversation switching and message timeline rendering from embedded JSON.
+- Two-sided message bubbles: right for Aditya, left for Chikki.
+- Single merged timeline from 3 embedded JSON files.
+- Date separators added in chat stream and time shown per message.
 - Robust parser with graceful fallback demo state when JSON is missing/invalid.
 - `data-testid` attributes added across interactive and critical UI elements.
 - Mobile overlap design issue fixed by adding safe-area spacing in footer note section.
@@ -30,13 +33,13 @@
 
 ### P1
 - Search/filter across conversations and messages.
-- Date separators and grouping by day/time clusters.
+- Optional toggles for exact raw JSON view vs cleaned chat view.
 
 ### P2
 - Add conversation statistics (top contacts, message counts).
 - Optional export to cleaned readable chat transcript format.
 
 ## Next Tasks
-- Replace sample embedded JSON with real Instagram export sample from user and validate parsing on real structure.
+- Replace sample embedded JSON parts with user's real 3 Instagram export JSON files and validate parsing on real structure.
 - Add upload/paste mode while keeping embedded mode as default fallback.
 - Add lightweight assistant Q&A mode over imported messages.

@@ -8,6 +8,11 @@ const safeString = (value, fallback = "") => {
   return fallback;
 };
 
+const getPreviewText = (content) => {
+  const text = safeString(content);
+  return text.trim().length > 0 ? text : "(empty message)";
+};
+
 const toTimestamp = (value) => {
   if (typeof value === "number") {
     return value;
@@ -24,7 +29,7 @@ const normalizeMessage = (message, index) => {
   return {
     id: safeString(message.id, `msg-${index}-${timestamp}`),
     senderName: safeString(
-      message.sender_name ?? message.sender ?? message.from,
+      message.sender_name ?? message.senderName ?? message.sender ?? message.from,
       "Unknown",
     ),
     content: safeString(message.content ?? message.text ?? message.message),
@@ -32,7 +37,65 @@ const normalizeMessage = (message, index) => {
   };
 };
 
-const getRawConversations = (rawData) => {
+const mergeMessageFiles = (files, currentUser) => {
+  const filesWithMessages = files.filter((item) => Array.isArray(item?.messages));
+  if (filesWithMessages.length === 0) {
+    return [];
+  }
+
+  const mergedMessages = filesWithMessages
+    .flatMap((file, fileIndex) =>
+      file.messages.map((message, messageIndex) =>
+        normalizeMessage(message, `${fileIndex}-${messageIndex}`),
+      ),
+    )
+    .sort((first, second) => first.timestamp - second.timestamp);
+
+  const uniqueMessages = mergedMessages.filter((message, index, array) => {
+    if (index === 0) {
+      return true;
+    }
+
+    const previous = array[index - 1];
+    return !(
+      previous.senderName === message.senderName &&
+      previous.timestamp === message.timestamp &&
+      previous.content === message.content
+    );
+  });
+
+  const allParticipants = filesWithMessages
+    .flatMap((file) => file.participants ?? [])
+    .map((item) => safeString(item?.name ?? item?.username ?? item))
+    .filter(Boolean);
+
+  const uniqueParticipants = [...new Set(allParticipants)];
+  const messageSenders = [...new Set(uniqueMessages.map((item) => item.senderName))];
+  const participants =
+    uniqueParticipants.length > 0
+      ? uniqueParticipants
+      : [currentUser, ...messageSenders.filter((name) => name !== currentUser)];
+
+  const firstFile = filesWithMessages[0] ?? {};
+  const fallbackOtherParticipant =
+    messageSenders.find((name) => name !== currentUser) ?? "Conversation";
+
+  return [
+    {
+      id: safeString(firstFile.id ?? "merged-instagram-thread"),
+      title: safeString(
+        firstFile.conversation_title ??
+          firstFile.title ??
+          firstFile.chat_with ??
+          fallbackOtherParticipant,
+      ),
+      participants: participants.map((name) => ({ name })),
+      messages: uniqueMessages,
+    },
+  ];
+};
+
+const getRawConversations = (rawData, currentUser) => {
   if (Array.isArray(rawData?.conversations)) {
     return rawData.conversations;
   }
@@ -52,6 +115,11 @@ const getRawConversations = (rawData) => {
   }
 
   if (Array.isArray(rawData)) {
+    const mergedFromFiles = mergeMessageFiles(rawData, currentUser);
+    if (mergedFromFiles.length > 0) {
+      return mergedFromFiles;
+    }
+
     return [
       {
         id: "embedded-array-conversation",
@@ -72,7 +140,6 @@ const normalizeConversation = (conversation, index, currentUser) => {
   const otherParticipants = participants.filter((name) => name !== currentUser);
   const messages = (conversation.messages ?? [])
     .map((item, messageIndex) => normalizeMessage(item, messageIndex))
-    .filter((item) => item.content.trim().length > 0)
     .sort((first, second) => first.timestamp - second.timestamp);
 
   const lastMessage = messages.at(-1);
@@ -87,13 +154,13 @@ const normalizeConversation = (conversation, index, currentUser) => {
     otherParticipants,
     participants,
     messages,
-    preview: safeString(lastMessage?.content, "No messages yet"),
+    preview: getPreviewText(lastMessage?.content),
     lastMessageTimestamp: lastMessage?.timestamp ?? null,
   };
 };
 
 export const parseInstagramData = (rawData, currentUser) => {
-  const conversations = getRawConversations(rawData)
+  const conversations = getRawConversations(rawData, currentUser)
     .map((item, index) => normalizeConversation(item, index, currentUser))
     .filter((item) => item.messages.length > 0);
 
@@ -107,7 +174,7 @@ export const parseInstagramData = (rawData, currentUser) => {
       title: "No Data Found",
       otherParticipants: ["Friend"],
       participants: [currentUser, "Friend"],
-      preview: "Embed your JSON in src/data/instagram_data.json",
+      preview: "Embed your JSON files in src/data/embeddedInstagramFiles.js",
       lastMessageTimestamp: Date.now(),
       messages: [
         {

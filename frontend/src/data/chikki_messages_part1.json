@@ -1,0 +1,25 @@
+{
+  "id": "chikki-part-1",
+  "conversation_title": "Chikki",
+  "participants": [
+    { "name": "Aditya" },
+    { "name": "Chikki" }
+  ],
+  "messages": [
+    {
+      "sender_name": "Aditya",
+      "timestamp_ms": 1773048500207,
+      "content": "I had all rights to be"
+    },
+    {
+      "sender_name": "Aditya",
+      "timestamp_ms": 1773048500958,
+      "content": "Angry"
+    },
+    {
+      "sender_name": "Chikki",
+      "timestamp_ms": 1773048575462,
+      "content": "thats wht i said its fine"
+    }
+  ]
+}

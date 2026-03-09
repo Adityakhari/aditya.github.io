@@ -1,0 +1,30 @@
+{
+  "id": "chikki-part-3",
+  "conversation_title": "Chikki",
+  "participants": [
+    { "name": "Aditya" },
+    { "name": "Chikki" }
+  ],
+  "messages": [
+    {
+      "sender_name": "Chikki",
+      "timestamp_ms": 1773048603223,
+      "content": "that'd be better"
+    },
+    {
+      "sender_name": "Chikki",
+      "timestamp_ms": 1773048605900,
+      "content": "okay"
+    },
+    {
+      "sender_name": "Aditya",
+      "timestamp_ms": 1773135000000,
+      "content": "Let's talk calmly tomorrow morning."
+    },
+    {
+      "sender_name": "Chikki",
+      "timestamp_ms": 1773138600000,
+      "content": "Okay, done."
+    }
+  ]
+}

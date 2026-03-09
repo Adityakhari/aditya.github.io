@@ -1,0 +1,30 @@
+{
+  "id": "chikki-part-2",
+  "conversation_title": "Chikki",
+  "participants": [
+    { "name": "Aditya" },
+    { "name": "Chikki" }
+  ],
+  "messages": [
+    {
+      "sender_name": "Chikki",
+      "timestamp_ms": 1773048578144,
+      "content": ":"
+    },
+    {
+      "sender_name": "Aditya",
+      "timestamp_ms": 1773048587895,
+      "content": "Just meet me today"
+    },
+    {
+      "sender_name": "Aditya",
+      "timestamp_ms": 1773048592293,
+      "content": "I can't say anything els"
+    },
+    {
+      "sender_name": "Aditya",
+      "timestamp_ms": 1773048594559,
+      "content": "*else"
+    }
+  ]
+}
