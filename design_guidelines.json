@@ -1,0 +1,111 @@
+{
+  "project_overview": {
+    "name": "InstaChat Viewer",
+    "type": "Web Application (Message Viewer)",
+    "user_persona": "Aditya (Non-technical user)",
+    "core_goal": "A high-fidelity, responsive, dark-mode Instagram chat viewer that reads messages from an embedded JSON file.",
+    "emotional_vibe": "Nostalgic, Sleek, Immersive, Premium Dark Mode."
+  },
+  "design_system": {
+    "theme": "dark",
+    "typography": {
+      "font_family_primary": "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      "headings": "font-medium tracking-tight",
+      "body": "text-sm leading-relaxed",
+      "mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
+    },
+    "colors": {
+      "background": {
+        "default": "#000000",
+        "secondary": "#121212",
+        "sidebar": "#000000"
+      },
+      "text": {
+        "primary": "#FAFAFA",
+        "secondary": "#A8A8A8",
+        "muted": "#737373"
+      },
+      "border": {
+        "default": "#262626",
+        "highlight": "#363636"
+      },
+      "brand": {
+        "primary": "#3797F0",
+        "gradient_start": "#833AB4",
+        "gradient_mid": "#FD1D1D",
+        "gradient_end": "#F77737"
+      },
+      "messaging": {
+        "bubble_sent": "#3797F0",
+        "bubble_received": "#262626",
+        "bubble_sent_text": "#FFFFFF",
+        "bubble_received_text": "#FAFAFA"
+      }
+    },
+    "spacing": {
+      "container_padding": "p-4 md:p-6",
+      "bubble_padding": "py-3 px-4",
+      "layout_gap": "gap-4"
+    },
+    "radius": {
+      "bubble": "rounded-[22px]",
+      "container": "rounded-xl",
+      "button": "rounded-lg"
+    }
+  },
+  "components": {
+    "layout": {
+      "name": "ChatLayout",
+      "structure": "Flex container, h-screen, overflow-hidden. Sidebar (w-[350px] or w-[400px]) on left (hidden mobile), ChatArea flex-1 on right.",
+      "background": "bg-black"
+    },
+    "sidebar": {
+      "name": "ThreadList",
+      "style": "Border-r border-[#262626] h-full flex flex-col",
+      "item_style": "Hover:bg-[#121212] transition-colors cursor-pointer p-4 flex items-center gap-3",
+      "avatar_size": "h-12 w-12 or h-14 w-14 rounded-full"
+    },
+    "chat_area": {
+      "name": "MessageStream",
+      "header_style": "h-[60px] border-b border-[#262626] flex items-center px-6 sticky top-0 bg-black/80 backdrop-blur-xl z-10",
+      "message_list_style": "flex-1 overflow-y-auto p-4 md:p-6 space-y-1",
+      "input_placeholder_style": "h-[60px] m-4 rounded-[22px] border border-[#262626] bg-[#121212] flex items-center px-4 text-[#A8A8A8] (Visual only)"
+    },
+    "message_bubble": {
+      "name": "ChatBubble",
+      "variants": ["sent", "received"],
+      "sent_style": "bg-[#3797F0] text-white self-end ml-auto rounded-[22px] rounded-br-sm mb-1 max-w-[75%]",
+      "received_style": "bg-[#262626] text-white self-start mr-auto rounded-[22px] rounded-bl-sm mb-1 max-w-[75%]",
+      "grouping_logic": "If same sender as prev, reduce vertical margin (mb-0.5) and adjust corner radius."
+    }
+  },
+  "data_integration": {
+    "source_file": "/app/frontend/src/data/instagram_data.json",
+    "structure_handling": "The app must be resilient. It should look for 'messages' array. If inside 'conversations' object, drill down. If at root, use it.",
+    "user_identification": "Check 'sender_name'. If === 'Aditya', treat as SENT. Else RECEIVED."
+  },
+  "motion": {
+    "page_load": "animate-in fade-in duration-700",
+    "message_appear": "animate-in slide-in-from-bottom-2 duration-300 fade-in"
+  },
+  "image_urls": {
+    "placeholder_user": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=60",
+    "placeholder_aditya": "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&auto=format&fit=crop&q=60",
+    "empty_state": "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&auto=format&fit=crop&q=60"
+  },
+  "universal_guidelines": [
+    "Use 'Inter' font for a clean, modern look.",
+    "Dark mode is MANDATORY. Do not create a light mode toggle.",
+    "Use 'sonner' for any notifications.",
+    "Use 'lucide-react' for icons (Send, Info, Phone, Video).",
+    "Do NOT use gradients for message bubbles unless specifically requested as an 'accent' mode. Default to Blue (#3797F0).",
+    "Ensure the JSON file is imported properly. If missing, show a graceful 'No Data' state or a demo message set."
+  ],
+  "instructions_to_main_agent": [
+    "1. Create a dummy 'instagram_data.json' in '/app/frontend/src/data/' with the structure found in research (participants, messages array).",
+    "2. Build the 'ChatLayout' component.",
+    "3. Build the 'MessageBubble' component with the conditional styling.",
+    "4. Implement the logic to parse the JSON and group messages by sender for visual grouping.",
+    "5. Ensure the sidebar lists the 'participants' from the JSON (excluding the user 'Aditya')."
+  ]
+}
